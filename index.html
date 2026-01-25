@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compteur Mobile</title>
+
+    <style>
+        /* Dark mode enabled by default */
+        :root {
+            --bg: #1c1c1e;
+            --text: #f2f2f7;
+            --primary: #32d74b;
+            --danger: #ff453a;
+            --blue: #0a84ff;
+            --card: #2c2c2e;
+            --warning: #ff9f0a;
+        }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
+            background: var(--bg);
+            color: var(--text);
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        /* Main counter display */
+        #counterValue {
+            font-size: 9rem;
+            font-weight: bold;
+            margin: 30px 0;
+        }
+
+        /* + and - buttons container */
+        #pmContainer {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        /* + button (large, on the right) */
+        #btnPlus {
+            background: var(--primary);
+            color: white;
+            font-size: 5rem;
+            padding: 20px 40px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+
+        /* - button (smaller, on the left) */
+        #btnMinus {
+            background: var(--card);
+            color: white;
+            font-size: 2rem;
+            padding: 20px 30px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+
+        /* Small buttons in one line */
+        #smallButtons {
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        /* Small button style */
+        .smallBtn {
+            padding: 10px 15px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        /* Colors */
+        #btnReset {
+            background: var(--warning);
+            color: white;
+        }
+
+        #btnLabel {
+            background: var(--blue);
+            color: white;
+        }
+
+        #btnNew {
+            background: var(--primary);
+            color: white;
+        }
+
+        #btnResetAll {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* Dropdown for selecting counters */
+        #counterSelector {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid #444;
+            background: var(--card);
+            color: var(--text);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Counter selection dropdown -->
+    <select id="counterSelector"></select>
+
+    <!-- Main counter value -->
+    <div id="counterValue">0</div>
+
+    <!-- + and - buttons -->
+    <div id="pmContainer">
+        <button id="btnMinus">-</button>
+        <button id="btnPlus">+</button>
+    </div>
+
+    <!-- Small buttons in one line -->
+    <div id="smallButtons">
+        <button id="btnReset" class="smallBtn">Reset</button>
+        <button id="btnLabel" class="smallBtn">Label</button>
+        <button id="btnNew" class="smallBtn">New</button>
+        <button id="btnResetAll" class="smallBtn">Reset All</button>
+    </div>
+
+    <script>
+        /* Key used to store counters in localStorage */
+        const STORAGE_KEY = "multiCounters_v2";
+
+        /* Load counters from localStorage or create a default one */
+        function loadCounters() {
+            return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
+                "Compteur 1": 0
+            };
+        }
+
+        /* Save counters to localStorage */
+        function saveCounters() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(counters));
+        }
+
+        /* Initialize counters */
+        let counters = loadCounters();
+        let currentName = Object.keys(counters)[0];
+
+        const counterValue = document.getElementById("counterValue");
+        const selector = document.getElementById("counterSelector");
+
+        /* Refresh dropdown list */
+        function refreshSelector() {
+            selector.innerHTML = "";
+            Object.keys(counters).forEach(name => {
+                const opt = document.createElement("option");
+                opt.value = name;
+                opt.textContent = name;
+                selector.appendChild(opt);
+            });
+            selector.value = currentName;
+        }
+
+        /* Update displayed counter value and label */
+        function refreshDisplay() {
+            counterValue.textContent = counters[currentName];
+        }
+
+        /* Increment counter */
+        document.getElementById("btnPlus").onclick = () => {
+            counters[currentName]++;
+            saveCounters();
+            refreshDisplay();
+        };
+
+        /* Decrement counter */
+        document.getElementById("btnMinus").onclick = () => {
+            if (counters[currentName] > 0) {
+                counters[currentName]--;
+            }
+            saveCounters();
+            refreshDisplay();
+        };
+
+        /* Reset current counter */
+        document.getElementById("btnReset").onclick = () => {
+            counters[currentName] = 0;
+            saveCounters();
+            refreshDisplay();
+        };
+
+        /* Rename current counter */
+        document.getElementById("btnLabel").onclick = () => {
+            const newName = prompt("Nom du compteur :", currentName);
+            if (newName && newName.trim() !== "") {
+                counters[newName] = counters[currentName];
+                delete counters[currentName];
+                currentName = newName;
+                saveCounters();
+                refreshSelector();
+                refreshDisplay();
+            }
+        };
+
+        /* Create a new counter */
+        document.getElementById("btnNew").onclick = () => {
+            const name = prompt("Nom du nouveau compteur :");
+            if (name && name.trim() !== "") {
+                counters[name] = 0;
+                currentName = name;
+                saveCounters();
+                refreshSelector();
+                refreshDisplay();
+            }
+        };
+
+        /* Delete all counters and reset storage */
+        document.getElementById("btnResetAll").onclick = () => {
+            if (confirm("Supprimer tous les compteurs ?")) {
+                localStorage.removeItem(STORAGE_KEY);
+                counters = { "Compteur 1": 0 };
+                currentName = "Compteur 1";
+                saveCounters();
+                refreshSelector();
+                refreshDisplay();
+            }
+        };
+
+        /* Change selected counter */
+        selector.onchange = () => {
+            currentName = selector.value;
+            refreshDisplay();
+        };
+
+        /* Initial UI setup */
+        refreshSelector();
+        refreshDisplay();
+    </script>
+
+</body>
+</html>
