@@ -125,7 +125,7 @@
     <select id="counterSelector"></select>
 
     <!-- Main counter value -->
-    <div id="counterValue">0</div>
+    <div id="counterValue">0</div>&nbsp;/&nbsp;
     <div id="maxValue">0</div>
     <!-- + and - buttons -->
     <div id="pmContainer">
@@ -192,6 +192,7 @@
         /* Update displayed counter value and label */
         function refreshDisplay() {
             counterValue.textContent = counters[currentName];
+            maxValue.textContent = max[currentName];
         }
 
         /* Increment counter */
