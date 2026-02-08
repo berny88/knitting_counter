@@ -225,11 +225,11 @@
             const maxcpt= prompt("max :");
             if (newName && newName.trim() !== "") {
                 counters[newName] = counters[currentName];
+                max[newName]=maxcpt;
                 delete counters[currentName];
                 delete max[currentName];
                 currentName = newName;
                 currentMax = maxcpt;
-                max[newName] = maxcpt;
                 saveCounters();
                 refreshSelector();
                 refreshDisplay();
