@@ -175,6 +175,7 @@
         let currentName = Object.keys(counters)[0];
 
         const counterValue = document.getElementById("counterValue");
+        const maxValue = document.getElementById("maxValue");
         const selector = document.getElementById("counterSelector");
 
         /* Refresh dropdown list */
@@ -221,14 +222,14 @@
         /* Rename current counter */
         document.getElementById("btnLabel").onclick = () => {
             const newName = prompt("Nom du compteur :", currentName);
-            const newMax = prompt("max :", currentMax);
+            const maxcpt= prompt("max :", currentMax);
             if (newName && newName.trim() !== "") {
                 counters[newName] = counters[currentName];
                 delete counters[currentName];
                 delete max[currentName];
                 currentName = newName;
-                currentMax = newMax;
-                max[newName] = newMax;
+                currentMax = maxcpt;
+                max[newName] = maxcpt;
                 saveCounters();
                 refreshSelector();
                 refreshDisplay();
