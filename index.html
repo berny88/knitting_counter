@@ -126,7 +126,7 @@
 
     <!-- Main counter value -->
     <div id="counterValue">0</div>
-
+    <div id="maxValue">0</div>
     <!-- + and - buttons -->
     <div id="pmContainer">
         <button id="btnMinus">-</button>
@@ -144,6 +144,8 @@
     <script>
         /* Key used to store counters in localStorage */
         const STORAGE_KEY = "multiCounters_v2";
+        const STORAGE_KEY_MAX="max";
+        const STORAGE_CURRENT="current";
 
         /* Load counters from localStorage or create a default one */
         function loadCounters() {
@@ -152,13 +154,24 @@
             };
         }
 
+        function loadMax(){
+            return JSON.parse(localStorage.getItem(STORAGE_KEY_MAX)) ||{
+                "max":1
+            };
+        }
+
         /* Save counters to localStorage */
         function saveCounters() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(counters));
+            localStorage.setItem(STORAGE_KEY,
+             JSON.stringify(counters));
+            localStorage.setItem(STORAGE_KEY_MAX,
+                JSON.stringify(max));
+            localStorage.setItem(STORAGE_CURRENT,currentName);
         }
 
         /* Initialize counters */
         let counters = loadCounters();
+        let max = loadMax();
         let currentName = Object.keys(counters)[0];
 
         const counterValue = document.getElementById("counterValue");
@@ -207,10 +220,14 @@
         /* Rename current counter */
         document.getElementById("btnLabel").onclick = () => {
             const newName = prompt("Nom du compteur :", currentName);
+            const newMax = prompt("max :", currentMax);
             if (newName && newName.trim() !== "") {
                 counters[newName] = counters[currentName];
                 delete counters[currentName];
+                delete max[currentName];
                 currentName = newName;
+                currentMax = newMax;
+                max[newName] = newMax;
                 saveCounters();
                 refreshSelector();
                 refreshDisplay();
@@ -220,8 +237,11 @@
         /* Create a new counter */
         document.getElementById("btnNew").onclick = () => {
             const name = prompt("Nom du nouveau compteur :");
+            const maxcpt = prompt ("max :");
             if (name && name.trim() !== "") {
                 counters[name] = 0;
+                max[name]=maxcpt;
+                currentMax=maxcpt;
                 currentName = name;
                 saveCounters();
                 refreshSelector();
