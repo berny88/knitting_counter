@@ -226,6 +226,8 @@
             if (newName && newName.trim() !== "") {
                 counters[newName] = counters[currentName];
                 max[newName]=maxcpt;
+                alert(currentName);
+                alert(newName);
                 delete counters[currentName];
                 delete max[currentName];
                 currentName = newName;
