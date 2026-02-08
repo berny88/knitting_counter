@@ -222,7 +222,7 @@
         /* Rename current counter */
         document.getElementById("btnLabel").onclick = () => {
             const newName = prompt("Nom du compteur :", currentName);
-            const maxcpt= prompt("max :", currentMax);
+            const maxcpt= prompt("max :");
             if (newName && newName.trim() !== "") {
                 counters[newName] = counters[currentName];
                 delete counters[currentName];
